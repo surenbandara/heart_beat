@@ -4,6 +4,20 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Fiverr_Order/heart_beat/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/drawable-anydpi-v24/default_profile_image.xml" value="0.1" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/drawable/ic_pulse.xml" value="0.14" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/activity_main2.xml" value="0.1" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/activity_splash.xml" value="0.10052083333333334" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/content_main.xml" value="0.11197916666666667" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/fragment_first.xml" value="0.11197916666666667" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/fragment_second.xml" value="0.11197916666666667" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/menu_profile.xml" value="0.1" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/popup_adduser.xml" value="0.1" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/popup_layout.xml" value="0.1109375" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/popup_search.xml" value="0.15" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/layout/splash_screen.xml" value="0.11197916666666667" />
+        <entry key="..\:/pulserate/heart_beat/app/src/main/res/menu/menu_main.xml" value="0.22" />
       </map>
     </option>
   </component>

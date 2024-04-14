@@ -68,7 +68,7 @@ public class GraphPlotter {
                 data.addDataSet(set);
             }
 
-            data.addEntry(new Entry(set.getEntryCount(), value + 5), 0);
+            data.addEntry(new Entry(set.getEntryCount(), value ), 0);
             data.notifyDataChanged();
 
             mChart.notifyDataSetChanged();

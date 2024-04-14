@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "344612927047",
+    "project_id": "pulserate-29ca7",
+    "storage_bucket": "pulserate-29ca7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:344612927047:android:f0ae80c36edc5800a6a362",
+        "android_client_info": {
+          "package_name": "com.krakendepp.heart_beat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "344612927047-afd5b6cclug5o3tp9s99m2ped0rtb6c4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.krakendepp.heart_beat",
+            "certificate_hash": "9b705f60710c6a3d967a3e0185391e089c9bdb72"
+          }
+        },
+        {
+          "client_id": "344612927047-2gtsk8184s5lqb4p6u7tkhiffga5t09r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASDxF3KtHDdXg7zWJH2oTXRkmcC8S3G9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "344612927047-2gtsk8184s5lqb4p6u7tkhiffga5t09r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
