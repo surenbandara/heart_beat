@@ -9,6 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -133,8 +139,14 @@ public class MainActivity2 extends AppCompatActivity {
 
 
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.BLUETOOTH ,
+                        Manifest.permission.BLUETOOTH_CONNECT ,
+                        Manifest.permission.BLUETOOTH_CONNECT ,
+                        Manifest.permission.BLUETOOTH_SCAN ,
+                        Manifest.permission.BLUETOOTH_ADMIN},
                 11);
+
 
 
         LocationRequest locationRequest = LocationRequest.create();
@@ -477,6 +489,28 @@ public class MainActivity2 extends AppCompatActivity {
 
     }
 
+    // Method to create a rounded bitmap
+    private Bitmap getRoundedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+        final float roundPx = bitmap.getWidth() / 2;
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return output;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -496,7 +530,8 @@ public class MainActivity2 extends AppCompatActivity {
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                                 // Resize the bitmap if needed (e.g., for icons)
                                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 100, 100, false);
-                                profileItem.setIcon(new BitmapDrawable(getResources(), resizedBitmap));
+                                Bitmap roundedBitmap = getRoundedBitmap(resizedBitmap);
+                                profileItem.setIcon(new BitmapDrawable(getResources(), roundedBitmap));
                             }
 
                             @Override
@@ -539,9 +574,9 @@ public class MainActivity2 extends AppCompatActivity {
                 }
             });
             if (btConnector.isDisabled()) {
-                startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 0);
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED){
                 }
+                startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 323434);
             } else {
                 pairedDevices = btConnector.getBondedDevices();
                 adapterForBT = new ArrayAdapter(this, android.R.layout.simple_list_item_1, pairedDevices) {

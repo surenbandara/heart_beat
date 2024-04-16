@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 public class PreferenceManager {
     private static final String PREF_NAME = "HeartBeatSharedPreference";
-
     private SharedPreferences sharedPreferences;
 
     public PreferenceManager(Context context) {
