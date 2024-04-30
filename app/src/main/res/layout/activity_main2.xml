@@ -34,41 +34,60 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-
         <!-- Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal">
 
             <ImageButton
                 android:id="@+id/startButton"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:src="@drawable/ic_start"
                 android:background="@null"
                 android:padding="16dp"
-                android:contentDescription="Start Button"
-                app:layout_constraintEnd_toStartOf="@+id/stopButton"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/stopButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/ic_stop"
-                android:background="@null"
-                android:padding="16dp"
-                android:contentDescription="Stop Button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/startButton"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:contentDescription="Start Button"/>
 
         </LinearLayout>
+
+
+        <!--        &lt;!&ndash; Buttons &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:layout_marginTop="16dp">-->
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/startButton"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:src="@drawable/ic_start"-->
+<!--                android:background="@null"-->
+<!--                android:padding="16dp"-->
+<!--                android:contentDescription="Start Button"-->
+<!--                app:layout_constraintEnd_toStartOf="@+id/stopButton"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/stopButton"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:src="@drawable/ic_stop"-->
+<!--                android:background="@null"-->
+<!--                android:padding="16dp"-->
+<!--                android:contentDescription="Stop Button"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/startButton"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--        </LinearLayout>-->
 
         <!-- Connectivity TextView -->
 

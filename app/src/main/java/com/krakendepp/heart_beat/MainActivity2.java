@@ -18,6 +18,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -41,6 +42,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -56,6 +58,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.krakendepp.heart_beat.Authentication.AuthManager;
 import com.krakendepp.heart_beat.BTCommunication.BTConnector;
+import com.krakendepp.heart_beat.BTCommunication.BTDataHandler;
 import com.krakendepp.heart_beat.DataBaseManager.PreferenceManager;
 import com.krakendepp.heart_beat.GraphPlotter.GraphPlotter;
 import com.krakendepp.heart_beat.databinding.ActivityMain2Binding;
@@ -85,8 +88,8 @@ public class MainActivity2 extends AppCompatActivity {
     private ActivityMain2Binding binding;
     public AlertDialog alertDialog, alertDialogSearch, alertDialogUserAdd;
 
-    public ListView listView, listView1, discoverdDeviceViewList;
-    public TextView chosePersonal, pastRecord ,btState;
+    public ListView listView, listView1, discoverdDeviceViewList ;
+    public TextView chosePersonal, pastRecord ,btState ,hearRate;
     public Button refreshButton, cacelButton, addUserButton, cancleButtonUserAdd;
     private static final int REQUEST_BLUETOOTH_PERMISSION = 1001;
 
@@ -115,7 +118,7 @@ public class MainActivity2 extends AppCompatActivity {
     private JSONObject personals;
     private String userEmail;
 
-    private EditText nameField;
+    private EditText nameField ;
     private String selectedPersonal = null;
 
     private ProgressBar progressBar;
@@ -124,8 +127,8 @@ public class MainActivity2 extends AppCompatActivity {
     private BTConnector btConnector = new BTConnector(this);
     private Context context = this;
 
-
     private Task<LocationSettingsResponse> task;
+    private ImageButton startRecording;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -134,7 +137,6 @@ public class MainActivity2 extends AppCompatActivity {
 
         binding = ActivityMain2Binding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         setSupportActionBar(binding.toolbar);
 
 
@@ -168,15 +170,6 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
-
-
-
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         preferenceManager = new PreferenceManager(this);
         personalNameList = new ArrayList<>();
@@ -185,7 +178,8 @@ public class MainActivity2 extends AppCompatActivity {
             userEmail = user.getEmail();
             personals = preferenceManager.getJson(userEmail);
 
-        } else {
+        }
+        else {
             personals = new JSONObject();
             userEmail = "guest";
         }
@@ -214,8 +208,8 @@ public class MainActivity2 extends AppCompatActivity {
 //                }
 //            }
 //        }).start();
-
-
+        startRecording = findViewById(R.id.startButton);
+        hearRate = findViewById(R.id.heartRateTextView);
         btState = findViewById(R.id.btState);
         chosePersonal = findViewById(R.id.chosePersonal);
         pastRecord = findViewById(R.id.personPastRecord);
@@ -305,9 +299,21 @@ public class MainActivity2 extends AppCompatActivity {
                 chosePersonal.setText(selectedPersonal);
                 try {
                     if (personals.get(selectedPersonal).toString().equals("0")) {
-                        pastRecord.setText("No Records");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                        pastRecord.setText("No Records");}});
+
                     } else {
-                        pastRecord.setText(personals.get(selectedPersonal).toString());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    pastRecord.setText(personals.get(selectedPersonal).toString());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }});
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -324,7 +330,6 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-        // Initialize adapter
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, personalNameList);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -350,7 +355,7 @@ public class MainActivity2 extends AppCompatActivity {
         discoverdDeviceViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Perform actions based on the clicked item
+                System.out.println("Item clicked");
                 BluetoothDevice item = (BluetoothDevice) parent.getItemAtPosition(position);
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -364,28 +369,22 @@ public class MainActivity2 extends AppCompatActivity {
                         }
                         if (pairing) {
                             BluetoothSocket bluetoothSocket = btConnector.connectToDevice(item);
-                            if(bluetoothSocket != null && bluetoothSocket.isConnected()){
-                                btState.setText("Connected");
-                                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {}
-                                Toast.makeText(getApplicationContext(), "Connection established : " + item.getName(), Toast.LENGTH_SHORT).show();
-
-                                try {
-                                    InputStream inputStream = bluetoothSocket.getInputStream();
-                                    while (true) {
-                                        byte b = (byte) inputStream.read();
-                                        System.out.println((char) b);
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            else{
-                                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {}
-                                Toast.makeText(getApplicationContext(), "Connection failed : " + item.getName(), Toast.LENGTH_SHORT).show();
-
-                            }
-
-
+                            pairedDevices = btConnector.getBondedDevices();
+                            adapterForBT = new ArrayAdapter(context, android.R.layout.simple_list_item_1, pairedDevices)
+                            {
+                                @NonNull
+                                @Override
+                                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                                    View view = super.getView(position, convertView, parent);
+                                    TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                                    // Get the object at the current position
+                                    BluetoothDevice device = (BluetoothDevice) pairedDevices.get(position);
+                                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {}
+                                    textView.setText(device.getName());
+                                    return view;
+                                }};
+                            listView.setAdapter(adapterForBT);
+                            btConnector.getDiscoverableDevices(discoverdDeviceViewList, progressBar);
                         }
                     }
                 });
@@ -398,39 +397,24 @@ public class MainActivity2 extends AppCompatActivity {
 
             }
         });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener()  {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                alertDialog.dismiss();
                 // Perform actions based on the clicked item
                 BluetoothDevice item = (BluetoothDevice) parent.getItemAtPosition(position);
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        BluetoothSocket bluetoothSocket = btConnector.connectToDevice(item);
-                        if(bluetoothSocket != null && bluetoothSocket.isConnected()){
-                            btState.setText("Connected");
-                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {}
-                            Toast.makeText(getApplicationContext(), "Connection established : " + item.getName(), Toast.LENGTH_SHORT).show();
+//                BluetoothSocket bluetoothSocket = btConnector.connectToDevice(item);
+//
+//                BTDataHandler btDataHandler = new BTDataHandler(bluetoothSocket,MainActivity2.this);
+//
+//                btDataHandler.start();
 
-                            try {
-                                InputStream inputStream = bluetoothSocket.getInputStream();
-                                while (true) {
-                                    byte b = (byte) inputStream.read();
-                                    System.out.println((char) b);
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        else{
-                            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {}
-                            Toast.makeText(getApplicationContext(), "Connection failed : " + item.getName(), Toast.LENGTH_SHORT).show();
 
-                        }
+                BTDataHandler btDataHandler = new BTDataHandler(MainActivity2.this, MainActivity2.this , btConnector , item , btState ,hearRate , startRecording,
+                        personals , selectedPersonal , userEmail , preferenceManager ,
+                        graphPlotter);
+                btDataHandler.execute();
 
-                    }
-                });
 
 
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {}
@@ -608,3 +592,6 @@ public class MainActivity2 extends AppCompatActivity {
 
 
 }
+
+
+
