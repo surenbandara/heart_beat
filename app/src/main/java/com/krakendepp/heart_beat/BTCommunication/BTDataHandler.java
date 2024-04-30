@@ -136,6 +136,7 @@ public class BTDataHandler extends AsyncTask<Void, Void, String> {
                     }
                 }
                 while (true) {
+
                     byte b = (byte) inputStream.read();
                     if (b != 13 && b != 10) {
                         constructor = constructor + (char) b;
@@ -143,6 +144,7 @@ public class BTDataHandler extends AsyncTask<Void, Void, String> {
                         if (b == 13) {
 
                             try{
+                                Thread.sleep(50);
                             value = Integer.parseInt(constructor);
                                 int finalValue = value;
                                 activity.runOnUiThread(new Runnable() {
@@ -151,7 +153,8 @@ public class BTDataHandler extends AsyncTask<Void, Void, String> {
                                     public void run() {
                             heartRate.setText(String.valueOf(finalValue)+" bpm");}});
                             constructor = "";
-                            onProgressUpdate(value);}
+                            onProgressUpdate(value);
+                            }
                             catch (Exception e){
                                 System.out.println(e);
                             }
