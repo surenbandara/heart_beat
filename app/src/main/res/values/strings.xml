@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">heart_beat</string>
-    <string name="title_activity_main2">Pulse Rate</string>
+    <string name="app_name">BabyBeatz</string>
+    <string name="title_activity_main2">BabyBeatz</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
+    <string name="first_fragment_label">BabyBeatz</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>

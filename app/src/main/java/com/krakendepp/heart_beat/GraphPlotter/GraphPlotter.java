@@ -3,12 +3,14 @@ package com.krakendepp.heart_beat.GraphPlotter;
 import android.graphics.Color;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.util.ArrayList;
@@ -25,6 +27,10 @@ public class GraphPlotter {
         }
 
     private void configureChart() {
+        Description description = new Description();
+        description.setText("bpm");
+        mChart.setDescription(description);
+
         mChart.getDescription().setEnabled(true);
         mChart.setTouchEnabled(true);
         mChart.setDragEnabled(true);
@@ -51,8 +57,16 @@ public class GraphPlotter {
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setTextColor(Color.WHITE);
         leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMinimum(-500f); // Set fixed minimum value
-        leftAxis.setAxisMaximum(500f); // Set fixed maximum value
+        // Add a custom value formatter for the left axis
+//        leftAxis.setValueFormatter(new ValueFormatter() {
+//            @Override
+//            public String getFormattedValue(float value) {
+//                // Your custom logic to format the value as needed
+//                // For example, you can convert the float value to a string with the appropriate unit
+//                return String.format("%.2f units", value);
+//            }
+//        });
+
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(true);

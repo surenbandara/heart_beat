@@ -68,7 +68,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Cancel"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+           />
 
         <!-- Spacer View -->
         <View
@@ -83,7 +84,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Refresh"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+           />
     </LinearLayout>
 
 </LinearLayout>

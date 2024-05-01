@@ -2,11 +2,13 @@ package com.krakendepp.heart_beat;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.LauncherActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -51,6 +53,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -70,6 +73,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import androidx.activity.result.ActivityResultCallback;
 
@@ -89,7 +93,7 @@ public class MainActivity2 extends AppCompatActivity {
     public AlertDialog alertDialog, alertDialogSearch, alertDialogUserAdd;
 
     public ListView listView, listView1, discoverdDeviceViewList ;
-    public TextView chosePersonal, pastRecord ,btState ,hearRate;
+    public TextView chosePersonal, pastRecord ,btState ,hearRate ,statusTextView;
     public Button refreshButton, cacelButton, addUserButton, cancleButtonUserAdd;
     private static final int REQUEST_BLUETOOTH_PERMISSION = 1001;
 
@@ -105,13 +109,21 @@ public class MainActivity2 extends AppCompatActivity {
             new ActivityResultCallback<FirebaseAuthUIAuthenticationResult>() {
                 @Override
                 public void onActivityResult(FirebaseAuthUIAuthenticationResult result) {
-                    Intent intent = getIntent(); // Get the current Intent
-                    finish(); // Finish the current activity
-                    startActivity(intent); // Start the activity again with the same Intent
+                    if (btDataHandler != null) {
+                        btDataHandler.cancel(true); // Cancel the AsyncTask if it's running
+                    }
 
+                    // Finish the current activity
+                    finish();
+
+                    // Restart the app by launching the launcher activity or any desired activity
+                    Intent intent = new Intent(getApplicationContext(), MainActivity2.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // Clear the activity stack
+                    startActivity(intent);
                 }
             }
     );
+
     private final AuthManager authManager = new AuthManager(this, signInLauncher);
 
     private PreferenceManager preferenceManager;
@@ -130,6 +142,10 @@ public class MainActivity2 extends AppCompatActivity {
     private Task<LocationSettingsResponse> task;
     private ImageButton startRecording;
 
+    private BTDataHandler btDataHandler;
+
+    private List<List<Integer>> trimesterList = new ArrayList<>();
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +153,9 @@ public class MainActivity2 extends AppCompatActivity {
 
         binding = ActivityMain2Binding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         setSupportActionBar(binding.toolbar);
 
 
@@ -208,6 +227,7 @@ public class MainActivity2 extends AppCompatActivity {
 //                }
 //            }
 //        }).start();
+        statusTextView = findViewById(R.id.statusTextView);
         startRecording = findViewById(R.id.startButton);
         hearRate = findViewById(R.id.heartRateTextView);
         btState = findViewById(R.id.btState);
@@ -225,6 +245,39 @@ public class MainActivity2 extends AppCompatActivity {
         ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, trimesterList);
         adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         trimesterSpinner.setAdapter(adapterSpinner);
+        trimesterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                List<List<Integer>> trimesterList = new ArrayList<>();
+
+                //Trimester list creation
+                ArrayList<Integer> trimester1 = new ArrayList<>();
+                trimester1.add(120);
+                trimester1.add(150);
+
+                ArrayList<Integer> trimester2 = new ArrayList<>();
+                trimester2.add(110);
+                trimester2.add(160);
+
+                ArrayList<Integer> trimester3 = new ArrayList<>();
+                trimester3.add(90);
+                trimester3.add(140);
+
+                trimesterList.add(trimester1);
+                trimesterList.add(trimester2);
+                trimesterList.add(trimester3);
+
+                List<Integer> currentTrimester = trimesterList.get(position);
+                if(btDataHandler != null){
+                btDataHandler.setTrimesterRange(currentTrimester.get(0),currentTrimester.get(1));}
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Do something if nothing is selected
+            }
+        });
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -256,6 +309,8 @@ public class MainActivity2 extends AppCompatActivity {
                     if (userEmail != "guest") {
                         try {
                             personals.put(nameField.getText().toString(), 0);
+
+                            if(btDataHandler != null){btDataHandler.setPersonals(personals);}
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -263,6 +318,7 @@ public class MainActivity2 extends AppCompatActivity {
                     } else {
                         try {
                             personals.put(nameField.getText().toString(), 0);
+                            if(btDataHandler != null){btDataHandler.setPersonals(personals);}
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -302,14 +358,18 @@ public class MainActivity2 extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                        pastRecord.setText("No Records");}});
+                        pastRecord.setText("No Records");
+                                if (btDataHandler != null ){
+                                    btDataHandler.setSelectedPersonal(selectedPersonal);}}});
 
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
-                                    pastRecord.setText(personals.get(selectedPersonal).toString());
+                                    pastRecord.setText(personals.get(selectedPersonal).toString() + " bpm");
+                                    if (btDataHandler != null ){
+                                    btDataHandler.setSelectedPersonal(selectedPersonal);}
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -408,12 +468,15 @@ public class MainActivity2 extends AppCompatActivity {
 //                BTDataHandler btDataHandler = new BTDataHandler(bluetoothSocket,MainActivity2.this);
 //
 //                btDataHandler.start();
+                System.out.println("+++++++++++++++++++++++++++++++==");
 
-
-                BTDataHandler btDataHandler = new BTDataHandler(MainActivity2.this, MainActivity2.this , btConnector , item , btState ,hearRate , startRecording,
+                btDataHandler = new BTDataHandler(MainActivity2.this, MainActivity2.this , btConnector , item , btState ,hearRate , startRecording,
                         personals , selectedPersonal , userEmail , preferenceManager ,
+                        statusTextView , pastRecord,
                         graphPlotter);
                 btDataHandler.execute();
+
+                btDataHandler.setTrimesterRange(120,150);
 
 
 
@@ -473,7 +536,6 @@ public class MainActivity2 extends AppCompatActivity {
 
     }
 
-    // Method to create a rounded bitmap
     private Bitmap getRoundedBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -583,6 +645,10 @@ public class MainActivity2 extends AppCompatActivity {
             return true;}
 
         else if(id == R.id.sign_out){
+            System.out.println("Sign out");
+            if (btDataHandler != null) {
+                btDataHandler.cancel(true);
+            }
             authManager.signOut();
             return true;}
 
@@ -590,7 +656,14 @@ public class MainActivity2 extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Stop the thread when the activity is destroyed
+        if (btDataHandler != null) {
+            btDataHandler.cancel(true);
+        }
+    }
 }
 
 
